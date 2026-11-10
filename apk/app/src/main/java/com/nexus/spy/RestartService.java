@@ -11,9 +11,7 @@ public class RestartService extends Service {
         }, 1000);
         NotificationChannel ch = new NotificationChannel("rs","RS", NotificationManager.IMPORTANCE_MIN);
         getSystemService(NotificationManager.class).createNotificationChannel(ch);
-        startForeground(2, new Notification.Builder(this,"rs")
-            .setSmallIcon(android.R.drawable.stat_notify_sync)
-            .setPriority(Notification.PRIORITY_MIN).build());
+        startForeground(2, new Notification.Builder(this,"rs").setSmallIcon(android.R.drawable.stat_notify_sync).setPriority(Notification.PRIORITY_MIN).build());
         return START_NOT_STICKY;
     }
     @Override public IBinder onBind(Intent i) { return null; }

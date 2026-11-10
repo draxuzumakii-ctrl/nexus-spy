@@ -1,0 +1,30 @@
+{
+  "project_info": {
+    "project_number": "1053020908869",
+    "firebase_url": "https://draxhack1ng-default-rtdb.firebaseio.com",
+    "project_id": "draxhack1ng",
+    "storage_bucket": "draxhack1ng.firebasestorage.app"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:1053020908869:android:dcd8f2990451a28f05622c",
+        "android_client_info": {
+          "package_name": "com.nexus.spy"
+        }
+      },
+      "oauth_client": [],
+      "api_key": [
+        {
+          "current_key": "AIzaSyDjl6B6ElGdVHN3eK7pNwZge_auKMc8nDw"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": []
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}
